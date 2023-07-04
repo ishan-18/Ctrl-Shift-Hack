@@ -1,5 +1,5 @@
 node_modules/
 config/.env
-cert/cert.pem
-cert/csr.pem
-cert/key.pem
+/cert/cert.pem
+/cert/csr.pem
+/cert/key.pem
