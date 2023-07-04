@@ -37,7 +37,7 @@ app.use(compression({
     filter: shouldCompress,
     // threshold: It is the byte threshold for the response 
     // body size before considering compression, the default is 1 kB
-    level: 9,
+    level: 6,
     threshold: 1
 }));
 
@@ -107,6 +107,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 //Routes
 app.use('/api/v1/auth', require('./routes/auth.route'))
+app.use('/api/v1/ngos', require('./routes/ngo.route'))
 
 
 app.use(errorHandler);
