@@ -19,6 +19,7 @@ exports.register = asyncHandler(async (req,res,next) => {
     });
 
     res.setHeader('Allow', 'POST');
+    res.setHeader('Content-Type', 'application/json');
 
     sendTokenResponse(user, 200, res)
 
@@ -45,6 +46,7 @@ exports.login = asyncHandler(async (req,res,next) => {
     }
 
     res.setHeader('Allow', 'POST');
+    res.setHeader('Content-Type', 'application/json');
 
     sendTokenResponse(user, 200, res)
 
@@ -61,9 +63,12 @@ exports.logout = asyncHandler(async (req,res,next)=>{
     })
 
     res.setHeader('Allow', 'GET');
+    res.setHeader('Content-Type', 'application/json');
     
     res.status(200).json({
+        code: 200,
         status: true,
+        message: "User Logged Out!",
         data: {}
     })
 })
@@ -86,6 +91,7 @@ exports.getMe = asyncHandler(async (req,res,next)=>{
     res.setHeader('Allow', 'GET');
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json({
+        code: 200,
         status: true,
         data: user
     })
@@ -110,6 +116,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     .status(statusCode)
     .cookie('token', token, options)
     .json({
+        code: statusCode,
         success: true,
         token
     })

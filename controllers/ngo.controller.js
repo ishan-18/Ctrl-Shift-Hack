@@ -3,6 +3,13 @@ const ErrorResponse = require('../utils/errorResponse')
 const asyncHandler = require('../middleware/async')
 const fs = require('fs')
 const path = require('path')
+const {promisify} = require('util')
+const {client} = require('../server')
+const geocoder = require('../utils/geocoder')
+
+const getAsync = promisify(client.get).bind(client);
+const setexAsync = promisify(client.setex).bind(client);
+const delAsync = promisify(client.del).bind(client);
 
 // @desc    GET ALL NGOs
 // @route   GET /api/v1/ngo
@@ -59,19 +66,29 @@ exports.getNGOs = asyncHandler(async (req,res,next) => {
         };
     }
 
-    const ngo = await query;
-
-    res.setHeader('Allow', 'GET');
-    res.setHeader('Content-Type', 'application/json');
-    if(ngo){
-        res.status(200).json({
-            status: true,
-            count: ngo.length,
-            pagination,
-            data: ngo
-        })
+    const ngoData = await client.getAsync('ngos');
+    
+    if (ngoData) {
+        res.status(200).json(JSON.parse(ngoData));
     }else{
-        return next(new ErrorResponse('Something went wrong', 500))
+        const ngo = await query;
+
+        client.setexAsync('ngos', 3600, JSON.stringify(ngo));
+
+        res.setHeader('Allow', 'GET');
+        res.setHeader('Content-Type', 'application/json');
+        if(ngo){
+            res.status(200).json({
+                code: 200,
+                status: true,
+                message: "Showing the List of NGOs",
+                count: ngo.length,
+                pagination,
+                Ngos: ngo
+            })
+        }else{
+            return next(new ErrorResponse('Something went wrong', 500))
+        }
     }
 });
 
@@ -79,17 +96,37 @@ exports.getNGOs = asyncHandler(async (req,res,next) => {
 // @route   GET /api/v1/ngo/:id
 // @access  Private
 exports.getNGO = asyncHandler(async (req,res,next) => {
-    const ngo = await NGO.findById(req.params.id);
-    
-    if(!ngo){
-        return next(new ErrorResponse(`NGO not found with id of ${req.params.id}`, 404));
-    }
+    const ngoId = req.params.id;
+    const redisKey = `ngo${ngoId}`;
 
-    res.setHeader('Allow', 'GET');
-    res.status(200).json({
-        success: true,
-        data: ngo
-    })
+    // Check if the data is available in the Redis cache
+    const ngoData = await getAsync(redisKey);
+
+    
+
+    if(ngoData){
+        res.setHeader('Allow', 'GET');
+        res.setHeader('Content-Type', 'application/json');
+        res.status(200).json(JSON.parse(ngoData));
+    }else{
+
+        const ngo = await NGO.findById(ngoId);
+
+        if(!ngo){
+            return next(new ErrorResponse(`NGO not found with id of ${ngoId}`, 404));
+        }
+    
+        setexAsync(redisKey, 3600, JSON.stringify(ngo));
+
+        res.setHeader('Allow', 'GET');
+        res.setHeader('Content-Type', 'application/json');
+        res.status(200).json({
+            code: 200,
+            status: true,
+            message: `Showing the NGO: ${ngo.name}`,
+            Ngo: ngo
+        })
+    }
 });
 
 // @desc    Create new NGOs
@@ -108,9 +145,14 @@ exports.createNGO = asyncHandler(async (req,res,next) => {
 
     const ngo = await NGO.create(req.body);
 
+    delAsync('ngos');
+
     res.setHeader('Allow', 'POST');
+    res.setHeader('Content-Type', 'application/json');
     res.status(201).json({
+        code: 201,
         status: true,
+        message: "NGO Created Successfully",
         data: ngo
     })
 });
@@ -119,23 +161,30 @@ exports.createNGO = asyncHandler(async (req,res,next) => {
 // @route   PUT /api/v1/ngo/
 // @access  Private
 exports.updateNGO = asyncHandler(async (req,res,next) => {
-    let ngo = await NGO.findById(req.params.id)
+    const ngoId = req.params.id;
+    const redisKey = `ngo${ngoId}`;
+
+    let ngo = await NGO.findById(ngoId)
 
     if(!ngo){
-        return next(new ErrorResponse(`NGO not found with id of ${req.params.id}`, 401));
+        return next(new ErrorResponse(`NGO not found with id of ${ngoId}`, 401));
     }
 
     if(ngo.user.toString() !== req.user.id &&  req.user.role !== 'admin'){
-        return next(new ErrorResponse(`User ${req.params.id} is not authorized to update this ngo`, 401))
+        return next(new ErrorResponse(`User ${ngoId} is not authorized to update this ngo`, 401))
     }
 
-    ngo = await NGO.findByIdAndUpdate(req.params.id, req.body, {
+    ngo = await NGO.findByIdAndUpdate(ngoId, req.body, {
         new: true,
         runValidators: true
     })
 
+    delAsync(redisKey);
+
     res.setHeader('Allow', 'PUT');
+    res.setHeader('Content-Type', 'application/json');
     res.status(200).json({
+        code: 200,
         status: true,
         data: ngo
     })
@@ -145,22 +194,59 @@ exports.updateNGO = asyncHandler(async (req,res,next) => {
 // @route   DELETE /api/v1/ngo/
 // @access  Private
 exports.deleteNGO = asyncHandler(async (req,res,next) => {
-    const ngo = await NGO.findById(req.params.id)
+    const ngoId = req.params.id;
+    const redisKey = `ngo${ngoId}`;
+
+    const ngo = await NGO.findById(ngoId)
 
     if(!ngo){
-        return next(new ErrorResponse(`NGO not found with id of ${req.params.id}`, 401));
+        return next(new ErrorResponse(`NGO not found with id of ${ngoId}`, 401));
     }
 
     if(ngo.user.toString() !== req.user.id &&  req.user.role !== 'admin'){
-        return next(new ErrorResponse(`User ${req.params.id} is not authorized to delet this ngo`, 401))
+        return next(new ErrorResponse(`User ${ngoId} is not authorized to delet this ngo`, 401))
     }
 
-    await NGO.findByIdAndDelete(req.params.id);
+    await NGO.findByIdAndDelete(ngoId);
+
+    delAsync(redisKey);
 
     res.setHeader('Allow', 'DELETE');
+    res.setHeader('Content-Type', 'application/json');
     res.status(200).json({
+        code: 200,
         status: true,
         msg: "Deleted Successfully"
+    })
+});
+
+// @desc    GET NGO within a radius
+// @route   GET /api/v1/ngo/radius/:zipcode/:distance
+// @access  Private
+exports.getNGOsInRadius = asyncHandler(async (req,res,next) => {
+    const {zipcode, distance} = req.params
+
+    //Get lat/lang from geocoder
+    const loc = await geocoder.geocode(zipcode);
+    const lat = loc[0].latitude;
+    const lng = loc[0].longitude;
+
+    //Calc radius using radius calculation
+    //Divide dist by Earth's radius 
+    //Earth's Radius = 3963 miles/6378kms
+    const radius = distance /3693;
+
+    const ngo = await NGO.find({
+        location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }
+    })
+
+    res.setHeader('Allow', 'GET');
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json({
+        code: 200,
+        success: true,
+        count: ngo.length,
+        data: ngo
     })
 });
 

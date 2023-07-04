@@ -26,16 +26,19 @@ const NgoSchema = new mongoose.Schema({
     website: {
         type: String,
         unique: true,
-        match: [/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/, 'Please enter a valid URL with HTTP or HTTPS']
+        required: [true, "Please Add a Website"],
+        match: [/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/, 'Please enter a valid URL with HTTP or HTTPS'],
     },
     phone: {
         type: String,
-        maxLength: [20, "Please Enter a valid Phone Number"]
+        maxLength: [20, "Please Enter a valid Phone Number"],
+        required: [true, "Please Add a Phone Number"],
     },
     email: {
         type: String,
         unique: true,
-        match: [/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'Please enter a valid email']
+        match: [/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'Please enter a valid email'],
+        required: [true, "Please Add a Email Address"],
     },
     address: {
         type: String,
@@ -59,7 +62,7 @@ const NgoSchema = new mongoose.Schema({
     },
     goals: {
         type: [String],
-        required: true,
+        required: [true, "Please add a Goal"],
         enum: [
             'Nurture Animals',
             'Treating Diseased Animals',
@@ -107,7 +110,7 @@ NgoSchema.pre('save', async function(next){
     }
 
     //Do not save address in DB 
-    this.address = null
+    this.address = undefined
     
     next();
 })

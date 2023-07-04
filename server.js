@@ -16,6 +16,7 @@ const cors = require('cors')
 const https = require('https')
 const fs = require('fs')
 const compression = require('compression')
+const redis = require('redis-promisify');
 const treblle = require('@treblle/express')
 
 dotenv.config({ path: './config/.env' })
@@ -41,6 +42,7 @@ app.use(compression({
     threshold: 1
 }));
 
+//Integrated Treblle Platform
 app.use(
     treblle({
         apiKey: process.env.TREBLLE_API_KEY,
@@ -48,6 +50,9 @@ app.use(
         additionalFieldsToMask: [],
     })
 )
+
+//Created Redis Client
+exports.client = redis.createClient();
 
 app.use(express.json())
 
@@ -80,6 +85,11 @@ app.use(helmet())
 //prevent cross-site scripting tags
 //<script>alert(1)</script>
 app.use(xssClean())
+
+// app.use((req, res, next) => {
+//     res.setHeader('accept-encoding', 'gzip');
+//     next();
+// });
 
 //Rate Limiting
 const limiter = rateLimit({
