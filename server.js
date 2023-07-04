@@ -13,13 +13,33 @@ const xssClean = require('xss-clean')
 const rateLimit = require('express-rate-limit')
 const hpp = require('hpp')
 const cors = require('cors')
+const https = require('https')
+const fs = require('fs')
+const compression = require('compression')
 const treblle = require('@treblle/express')
 
-dotenv.config({path: './config/.env'})
+dotenv.config({ path: './config/.env' })
 
 connectDB();
 
 const app = express();
+const shouldCompress = (req, res) => {
+    if (req.headers['x-no-compression']) {
+        // Will not compress responses, if this header is present
+        return false;
+    }
+    // Resort to standard compression
+    return compression.filter(req, res);
+};// Compress all HTTP responses
+app.use(compression({
+    // filter: Decide if the answer should be compressed or not,
+    // depending on the 'shouldCompress' function above
+    filter: shouldCompress,
+    // threshold: It is the byte threshold for the response 
+    // body size before considering compression, the default is 1 kB
+    level: 9,
+    threshold: 1
+}));
 
 app.use(
     treblle({
@@ -29,16 +49,18 @@ app.use(
     })
 )
 
-
 app.use(express.json())
+
+
 app.use(cookieParser())
 
-if(process.env.NODE_ENV === 'development'){
+if (process.env.NODE_ENV === 'development') {
     app.use(morgan(
         'dev'
     ));
 }
 
+//Set Accept Header
 app.use(function (req, res, next) {
     res.setHeader('Accept', 'application/json')
     next();
@@ -92,12 +114,18 @@ app.use(errorHandler);
 
 //Starting the server
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, ()=>{
-    console.log(`Server Listening in ${process.env.NODE_ENV} on port ${process.env.PORT} 🚀`.yellow.bold)
+
+const sslServer = https.createServer({
+    key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
+}, app)
+
+const server = sslServer.listen(PORT, () => {
+    console.log(`Secure Server Listening in ${process.env.NODE_ENV} on port ${process.env.PORT} 🚀`.yellow.bold)
 })
 
 // Handle Unhandled rejections
-process.on('unhandledRejection', (err,promise)=>{
+process.on('unhandledRejection', (err, promise) => {
     console.log(`Error ${err.message}`.red.bold)
 
     server.close(() => process.exit(1));

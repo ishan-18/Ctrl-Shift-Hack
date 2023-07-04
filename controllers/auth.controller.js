@@ -72,7 +72,7 @@ exports.logout = asyncHandler(async (req,res,next)=>{
 // @route   GET /api/v1/auth/me
 // @access  Private
 exports.getMe = asyncHandler(async (req,res,next)=>{
-    const user = await User.findById(req.user.id)
+    const user = await User.findById(req.user.id).lean()
     if(!user){
         return next(new ErrorResponse('User Not Found', 404))
     }
@@ -84,6 +84,7 @@ exports.getMe = asyncHandler(async (req,res,next)=>{
     }
 
     res.setHeader('Allow', 'GET');
+    res.setHeader('Content-Type', 'application/json');
     res.status(200).json({
         status: true,
         data: user

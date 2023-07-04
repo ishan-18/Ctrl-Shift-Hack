@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server",
-    "start": "set NODE_ENV=production && node server"
+    "start": "set NODE_ENV=production && pm2 start server.js -i max"
   },
   "author": "Ishan Gawali",
   "license": "MIT",
@@ -13,6 +13,7 @@
     "@treblle/express": "^0.0.6",
     "bcrypt": "^5.1.0",
     "colors": "^1.4.0",
+    "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
