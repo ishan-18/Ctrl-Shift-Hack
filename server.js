@@ -24,23 +24,9 @@ dotenv.config({ path: './config/.env' })
 connectDB();
 
 const app = express();
-const shouldCompress = (req, res) => {
-    if (req.headers['x-no-compression']) {
-        // Will not compress responses, if this header is present
-        return false;
-    }
-    // Resort to standard compression
-    return compression.filter(req, res);
-};// Compress all HTTP responses
 app.use(compression({
-    // filter: Decide if the answer should be compressed or not,
-    // depending on the 'shouldCompress' function above
-    filter: shouldCompress,
-    // threshold: It is the byte threshold for the response 
-    // body size before considering compression, the default is 1 kB
-    level: 6,
-    threshold: 1
-}));
+    level: 6
+}))
 
 //Integrated Treblle Platform
 app.use(
@@ -55,7 +41,6 @@ app.use(
 exports.client = redis.createClient();
 
 app.use(express.json())
-
 
 app.use(cookieParser())
 
@@ -80,16 +65,14 @@ app.use(fileupload())
 app.use(mongoSanitize())
 
 //Set security headers
-app.use(helmet())
+app.use(helmet({
+    contentSecurityPolicy: false
+}))
 
 //prevent cross-site scripting tags
 //<script>alert(1)</script>
 app.use(xssClean())
 
-// app.use((req, res, next) => {
-//     res.setHeader('accept-encoding', 'gzip');
-//     next();
-// });
 
 //Rate Limiting
 const limiter = rateLimit({

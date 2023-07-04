@@ -105,9 +105,13 @@ exports.getNGO = asyncHandler(async (req,res,next) => {
     
 
     if(ngoData){
-        res.setHeader('Allow', 'GET');
-        res.setHeader('Content-Type', 'application/json');
-        res.status(200).json(JSON.parse(ngoData));
+        res.setHeader('Allow', 'GET')
+        res.status(200).json({
+            code: 200,
+            status: true,
+            message: `Showing the NGO: ${JSON.parse(ngoData).name}`,
+            Ngo: JSON.parse(ngoData)
+        });
     }else{
 
         const ngo = await NGO.findById(ngoId);
@@ -118,14 +122,14 @@ exports.getNGO = asyncHandler(async (req,res,next) => {
     
         setexAsync(redisKey, 3600, JSON.stringify(ngo));
 
-        res.setHeader('Allow', 'GET');
-        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Allow', 'GET')
         res.status(200).json({
             code: 200,
             status: true,
             message: `Showing the NGO: ${ngo.name}`,
             Ngo: ngo
-        })
+        });
+          
     }
 });
 
