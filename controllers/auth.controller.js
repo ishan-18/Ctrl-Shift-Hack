@@ -93,7 +93,11 @@ exports.getMe = asyncHandler(async (req,res,next)=>{
     res.status(200).json({
         code: 200,
         status: true,
-        data: user
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        message: "User Details",
+        user: user
     })
 })
 

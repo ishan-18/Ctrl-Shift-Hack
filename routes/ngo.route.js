@@ -6,7 +6,7 @@ const { setContentSecurityPolicy } = require('../middleware/setCsp');
 const { setGzip } = require('../middleware/setGzip');
 
 router.route('/')
-.get(protect, setAccept, setContentSecurityPolicy, getNGOs)
+.get(protect, setAccept, setContentSecurityPolicy, setGzip, getNGOs)
 .post(protect, authorize('ngouser', 'admin'), setAccept, setContentSecurityPolicy, createNGO);
 
 router.route('/:id')

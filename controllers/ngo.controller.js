@@ -69,6 +69,7 @@ exports.getNGOs = asyncHandler(async (req,res,next) => {
     const ngoData = await client.getAsync('ngos');
     
     if (ngoData) {
+        res.setHeader('Allow', 'GET');
         res.status(200).json(JSON.parse(ngoData));
     }else{
         const ngo = await query;
@@ -128,8 +129,7 @@ exports.getNGO = asyncHandler(async (req,res,next) => {
             status: true,
             message: `Showing the NGO: ${ngo.name}`,
             Ngo: ngo
-        });
-          
+        });     
     }
 });
 

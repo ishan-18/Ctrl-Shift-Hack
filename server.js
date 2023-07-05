@@ -24,23 +24,30 @@ dotenv.config({ path: './config/.env' })
 connectDB();
 
 const app = express();
-app.use(compression({
-    level: 6
-}))
+
+
+
+
+//Created Redis Client
+exports.client = redis.createClient();
+
+app.use(express.json())
+app.set('trust proxy', true);
 
 //Integrated Treblle Platform
 app.use(
     treblle({
         apiKey: process.env.TREBLLE_API_KEY,
         projectId: process.env.TREBLLE_PROJECT_ID,
-        additionalFieldsToMask: [],
+        additionalFieldsToMask: ['password', 'email', 'token', 'cookie', 'authorization'],
+        showErrors: true
     })
 )
 
-//Created Redis Client
-exports.client = redis.createClient();
-
-app.use(express.json())
+app.use(compression({
+    level: 6,
+    threshold: 0
+}))
 
 app.use(cookieParser())
 
@@ -106,6 +113,8 @@ app.use('/api/v1/ngos', require('./routes/ngo.route'))
 app.use(errorHandler);
 
 
+
+
 //Starting the server
 const PORT = process.env.PORT || 5000;
 
@@ -124,3 +133,4 @@ process.on('unhandledRejection', (err, promise) => {
 
     server.close(() => process.exit(1));
 })
+
