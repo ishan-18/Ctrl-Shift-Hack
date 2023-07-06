@@ -114,12 +114,12 @@ app.use('/api/v1/auth', require('./routes/auth.route'))
 app.use('/api/v1/ngos', require('./routes/ngo.route'))
 app.use('/api/v1/animals', require('./routes/animal.route'))
 ```
-You can access this routes by `https://127.0.0.1/api/v1/auth` For Auth module. For other Modules it's same.
+You can access this routes by `https://127.0.0.1:4000/api/v1/auth` For Auth module. For other Modules it's same.
 
 For Auth Module:
 
 
-For Auth Register: `https://127.0.0.1/api/v1/auth/register`
+For Auth Register: `https://127.0.0.1:4000/api/v1/auth/register`
 The Body you are going to put is
 ```shell
 {
@@ -141,7 +141,7 @@ By Default the user will be "user" but to change the role you can specify role f
 ```
 
 
-For Auth Login: `https://127.0.0.1/api/v1/auth/login`
+For Auth Login: `https://127.0.0.1:4000/api/v1/auth/login`
 The Body you are going to put is
 ```shell
 {
@@ -153,31 +153,31 @@ So after hitting the Post Route you will get response token.
 Take that token set header in postman `Authorization: Bearer {token}` to accessing private routes.
 
 
-For Auth Logout: `https://127.0.0.1/api/v1/auth/logout`
+For Auth Logout: `https://127.0.0.1:4000/api/v1/auth/logout`
 No Body is required as it is `GET` route.
 The Cookies will be set to none.
 
 
-For Auth me: `https://127.0.0.1/api/v1/auth/login`
+For Auth me: `https://127.0.0.1:4000/api/v1/auth/login`
 No Body is required as it is `GET` route.
 Just set the `Authorization: Bearer {token}` in headers as it is Private route.
 
 
 Now for NGO Module
-You can access this routes by `https://127.0.0.1/api/v1/ngos` For NGO module.
+You can access this routes by `https://127.0.0.1:4000/api/v1/ngos` For NGO module.
 
 
-For Getting all NGOs: `https://127.0.0.1/api/v1/ngos/`
+For Getting all NGOs: `https://127.0.0.1:4000/api/v1/ngos/`
 As this is GET request, No Body is required.
 This is a `Private` route so set header in postman `Authorization: Bearer {token}`
 
 
-For Getting a NGO By Id: `https://127.0.0.1/api/v1/ngos/${id}`
+For Getting a NGO By Id: `https://127.0.0.1:4000/api/v1/ngos/${id}`
 As this is GET request, No Body is required.
 This is a `Private` route so set header in postman `Authorization: Bearer {token}`
 
 
-For Creating a NGO: `https://127.0.0.1/api/v1/ngos/`
+For Creating a NGO: `https://127.0.0.1:4000/api/v1/ngos/`
 This is a `Private` route so set header in postman `Authorization: Bearer {token}
 For creating a NGO, you need to be a `ngouser` . If you are logged in via `user` then you are getting an error.
 As this is a Post request, Type this in the body
@@ -194,7 +194,7 @@ As this is a Post request, Type this in the body
 The NGO will be get created.
 
 
-For Updating a NGO: `https://127.0.0.1/api/v1/ngos/${id}`
+For Updating a NGO: `https://127.0.0.1:4000/api/v1/ngos/${id}`
 This is a `Private` route so set header in postman `Authorization: Bearer {token}`
 For updating a NGO, you need to be a `ngouser`. If you are logged in via `user` then you are getting an error.
 NGO will be get updated only if you are the owner of that NGO.
@@ -207,32 +207,32 @@ As this is a PUT request, Type this in the body
 ```
 
 
-For Deleting the NGO: `https://127.0.0.1/api/v1/ngos/${id}`
+For Deleting the NGO: `https://127.0.0.1:4000/api/v1/ngos/${id}`
 This is a `Private` route so set header in postman `Authorization: Bearer {token}`
 For Deleting a NGO, you need to be a `ngouser`. If you are logged in via `user` then you are getting an error.
 NGO will be get deleted only if you are the owner of that NGO.
 
 
-For Getting the NGO: `https://127.0.0.1/api/v1/ngos/radius/:zipcode/:distance`
+For Getting the NGO: `https://127.0.0.1:4000/api/v1/ngos/radius/:zipcode/:distance`
 This is a `Private` route so set header in postman `Authorization: Bearer {token}`
 In `distance: 5` any number will work.
 
 
 Now For Animal Module:
-You can access this routes by `https://127.0.0.1/api/v1/animals` For Animal module.
+You can access this routes by `https://127.0.0.1:4000/api/v1/animals` For Animal module.
 
 
-For Getting all The Animals: `https://127.0.0.1/api/v1/animals`
+For Getting all The Animals: `https://127.0.0.1:4000/api/v1/animals`
 As this is GET request, No Body is required.
 This is a `Private` route so set header in postman `Authorization: Bearer {token}`
 
 
-For Getting a Animal By Id: `https://127.0.0.1/api/v1/animals/${id}`
+For Getting a Animal By Id: `https://127.0.0.1:4000/api/v1/animals/${id}`
 As this is GET request, No Body is required.
 This is a `Private` route so set header in postman `Authorization: Bearer {token}`
 
 
-For Posting the details of a Animal: `https://127.0.0.1/api/v1/animals/`
+For Posting the details of a Animal: `https://127.0.0.1:4000/api/v1/animals/`
 This is a `Private` route so set header in postman `Authorization: Bearer {token}`
 For posting the details of a Animal, you need to be a `user`. If you are logged in via `ngouser` then you are getting an error.
 As this is a Post request, Type this in the body
@@ -246,7 +246,7 @@ As this is a Post request, Type this in the body
 ```
 
 
-For Updating the Details of Animals: `https://127.0.0.1/api/v1/animals/${id}`
+For Updating the Details of Animals: `https://127.0.0.1:4000/api/v1/animals/${id}`
 This is a `Private` route so set header in postman `Authorization: Bearer {token}`
 For Updating the Details of Animals, you need to be a `user`. If you are logged in via `ngouser` then you are getting an error.
 Animals details will be get updated only if you are the one who posted that details.
@@ -259,18 +259,18 @@ As this is a PUT request, Type this in the body
 ```
 
 
-For Deleting the Details of Animals: `https://127.0.0.1/api/v1/animals/${id}`
+For Deleting the Details of Animals: `https://127.0.0.1:4000/api/v1/animals/${id}`
 This is a `Private` route so set header in postman `Authorization: Bearer {token}`
 For Deleting the Details of Animals, you need to be a `user`. If you are logged in via `ngouser` then you are getting an error.
 Animals details will be get deleted only if you are the one who posted that details.
 
 
-For Getting the nearby Animals: `https://127.0.0.1/api/v1/animals/radius/:zipcode/:distance`
+For Getting the nearby Animals: `https://127.0.0.1:4000/api/v1/animals/radius/:zipcode/:distance`
 This is a `Private` route so set header in postman `Authorization: Bearer {token}`
 In `distance: 5` any number will work.
 
 
-For Allowing The NGOs to rescue the Animals: `https://127.0.0.1/api/v1/animals/ngo/${ngoId}`
+For Allowing The NGOs to rescue the Animals: `https://127.0.0.1:4000/api/v1/animals/ngo/${ngoId}`
 This is a `Private` route so set header in postman `Authorization: Bearer {token}`
 For Deleting the Details of Animals, you need to be a `ngouser`. If you are logged in via `user` then you are getting an error.
 As this a PUT request, You are going to type this in body
