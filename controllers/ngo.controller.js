@@ -107,6 +107,7 @@ exports.getNGO = asyncHandler(async (req,res,next) => {
 
     if(ngoData){
         res.setHeader('Allow', 'GET')
+        res.setHeader('Content-Type', 'application/json');
         res.status(200).json({
             code: 200,
             status: true,
@@ -124,6 +125,7 @@ exports.getNGO = asyncHandler(async (req,res,next) => {
         setexAsync(redisKey, 3600, JSON.stringify(ngo));
 
         res.setHeader('Allow', 'GET')
+        res.setHeader('Content-Type', 'application/json');
         res.status(200).json({
             code: 200,
             status: true,
