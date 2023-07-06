@@ -49,12 +49,6 @@ app.use(compression({
 
 app.use(cookieParser())
 
-if (process.env.NODE_ENV === 'development') {
-    app.use(morgan(
-        'dev'
-    ));
-}
-
 //Set Accept Header
 // app.use(function (req, res, next) {
 //     res.setHeader('Accept', 'application/json')
@@ -97,6 +91,13 @@ app.use((req, res, next) => {
 
 //Enable CORS
 app.use(cors())
+
+
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan(
+        'dev'
+    ));
+}
 
 //Static upload 
 app.use(express.static(path.join(__dirname, 'public')))
