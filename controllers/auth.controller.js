@@ -62,8 +62,8 @@ exports.logout = asyncHandler(async (req,res,next)=>{
         httpOnly: true
     })
 
+    res.setHeader('Content-Type', 'application/json')
     res.setHeader('Allow', 'GET');
-    res.setHeader('Content-Type', 'application/json');
     
     res.status(200).json({
         code: 200,
@@ -77,15 +77,26 @@ exports.logout = asyncHandler(async (req,res,next)=>{
 // @route   GET /api/v1/auth/me
 // @access  Private
 exports.getMe = asyncHandler(async (req,res,next)=>{
-    const user = await User.findById(req.user.id).lean()
+    const user = await User.aggregate([
+        {
+          $match: {
+            _id: req.user.id,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            uuid: '$_id',
+            name: 1,
+            email: 1,
+            role: 1,
+            createdAt: 1,
+            __v: 1,
+          },
+        },
+      ]);
     if(!user){
         return next(new ErrorResponse('User Not Found', 404))
-    }
-
-    const allowedTypes = ['application/json'];
-
-    if (!req.headers.accept || !allowedTypes.some(type => req.accepts(type))) {
-        return next(new ErrorResponse('Method Not Allowed', 406))
     }
 
     res.setHeader('Allow', 'GET');
@@ -93,9 +104,6 @@ exports.getMe = asyncHandler(async (req,res,next)=>{
     res.status(200).json({
         code: 200,
         status: true,
-        headers: {
-            'Content-Type': 'application/json'
-        },
         message: "User Details",
         user: user
     })
@@ -122,8 +130,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     .json({
         code: statusCode,
         success: true,
+        message: "User logged in Successfully",
         token
     })
 }
-
-
