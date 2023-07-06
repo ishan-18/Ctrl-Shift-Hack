@@ -11,14 +11,14 @@ router.route('/radius/:zipcode/:distance')
 
 router.route('/')
 .get(protect, setAccept, setContentSecurityPolicy, setGzip, getAnimals)
-.post(protect, authorize('user', 'admin'), setAccept, setContentSecurityPolicy, createAnimal)
+.post(protect, authorize('user', 'admin'), setAccept, setContentSecurityPolicy, setGzip, createAnimal)
 
 router.route('/:id')
 .get(protect, setAccept, setContentSecurityPolicy, setGzip, getAnimal)
-.put(protect, authorize('user', 'admin'), setAccept, setContentSecurityPolicy, updateAnimal)
-.delete(protect, authorize('user', 'admin'), setAccept, setContentSecurityPolicy, deleteAnimal)
+.put(protect, authorize('user', 'admin'), setAccept, setContentSecurityPolicy, setGzip, updateAnimal)
+.delete(protect, authorize('user', 'admin'), setAccept, setContentSecurityPolicy, setGzip, deleteAnimal)
 
 router.route('/ngo/:ngoid')
-.put(protect, authorize('ngouser'), setAccept, setContentSecurityPolicy, getAnimalsRescuedByNGO)
+.put(protect, authorize('ngouser'), setAccept, setContentSecurityPolicy, setGzip, getAnimalsRescuedByNGO)
 
 module.exports = router

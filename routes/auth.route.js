@@ -6,9 +6,9 @@ const { setContentSecurityPolicy } = require('../middleware/setCsp');
 const { setGzip } = require('../middleware/setGzip');
 
 
-router.post('/register', setAccept, setContentSecurityPolicy, register);
+router.post('/register', setAccept, setContentSecurityPolicy, setGzip, register);
 
-router.post('/login', setAccept, setContentSecurityPolicy, login);
+router.post('/login', setAccept, setContentSecurityPolicy, setGzip, login);
 
 router.get('/logout', setAccept, setContentSecurityPolicy, setGzip, logout);
 

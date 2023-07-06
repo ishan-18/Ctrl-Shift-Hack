@@ -280,5 +280,6 @@ As this a PUT request, You are going to type this in body
 }
 ```
 
+I have used NGINX for reverse_proxy and gzip compression, but I was not able to integrate with docker, but locally I am able to do it. 
 
 
