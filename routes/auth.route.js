@@ -10,7 +10,7 @@ router.post('/register', setAccept, setContentSecurityPolicy, register);
 
 router.post('/login', setAccept, setContentSecurityPolicy, login);
 
-router.get('/logout', setAccept, setContentSecurityPolicy, logout);
+router.get('/logout', setAccept, setContentSecurityPolicy, setGzip, logout);
 
 router.get('/me', protect, setAccept, setContentSecurityPolicy, setGzip, getMe);
 

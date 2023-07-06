@@ -39,7 +39,8 @@ app.use(
 exports.client = redis.createClient();
 
 app.use(express.json())
-app.set('trust proxy', true);
+app.use(cookieParser())
+// app.set('trust proxy', true);
 
 
 app.use(compression({
@@ -47,7 +48,7 @@ app.use(compression({
     threshold: 0
 }))
 
-app.use(cookieParser())
+
 
 //Set Accept Header
 // app.use(function (req, res, next) {
@@ -64,9 +65,7 @@ app.use(fileupload())
 app.use(mongoSanitize())
 
 //Set security headers
-app.use(helmet({
-    contentSecurityPolicy: false
-}))
+app.use(helmet())
 
 //prevent cross-site scripting tags
 //<script>alert(1)</script>
@@ -105,6 +104,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 //Routes
 app.use('/api/v1/auth', require('./routes/auth.route'))
 app.use('/api/v1/ngos', require('./routes/ngo.route'))
+app.use('/api/v1/animals', require('./routes/animal.route'))
 
 
 app.use(errorHandler);
